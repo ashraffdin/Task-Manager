@@ -5,11 +5,17 @@ const multer = require('multer');
 const upload = multer({dest:"uploads"});
 
 
-router.get('/',(req,res)=>{
+router.route('/')
+.get((req,res)=>{
     Attachment.find({})
     .then(attachments=>{res.json({attachments});
     }).catch(err=>res.status(500).json({error:"Something went wrong"}))
-});
+})
+.post((req,res)=>{
+    Attachment.find({project:req.body.project})
+    .then(attachments=>{res.json({attachments});
+    }).catch(err=>res.status(500).json({error:"Something went wrong"}))
+})
 
 //A6
 router.post('/create',upload.any('file_uploaded'),(req,res)=>{
@@ -29,7 +35,6 @@ router.post('/create',upload.any('file_uploaded'),(req,res)=>{
 router.get('/:id',(req,res)=>{
     Attachment.findById(req.params.id)
     .then(attachment =>{
-        console.log('dsdsd')
         res.download(attachment.path,attachment.name);
     }).catch(err=>res.status(404).json({err:"Something went wrong when fetching attachment"}));
 });

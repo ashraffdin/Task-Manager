@@ -32,6 +32,7 @@ router.route('/:id')
 .get((req,res)=>{
     const taskId = req.params.id;
     Task.findById(taskId)
+    .populate('assignedTo')
     .populate({
         path:'project',
         populate:{
@@ -43,15 +44,14 @@ router.route('/:id')
 })
 .put((req,res)=>{
     const taskId = req.params.id;
-    const {adminId,assignedTo} = req.body;
+    const {adminId,newUser} = req.body;
     Task.findById(taskId)
-    .orFail()
     .populate('project')
     .then(task=>{
         if(task.project.administrator == adminId && task.status != 'completed'){
             let newAssignment = new Set();
-            let allTasks = task.assignedTo.concat(assignedTo)
-            for(let p of allTasks){
+            task.assignedTo.push(newUser)
+            for(let p of task.assignedTo){
                 newAssignment.add(p.toString()); 
             }
             task.assignedTo =  [...newAssignment];
@@ -63,7 +63,7 @@ router.route('/:id')
             res.status(403).json({error:"You are not allowed to add new member to this task"});
         }
         
-    }).catch(err=>res.status(404).json({error:"Failed to find the task"}));
+    }).catch(err=>console.log(err))//res.status(404).json({error:"Failed to find the task"}));
 });
 
 module.exports = router;
