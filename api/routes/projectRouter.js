@@ -82,14 +82,10 @@ router.route('/:id')
         .then(_=>{
             Attachment.deleteMany({project:id})
             .then(deletedFile=>{
-                // for(let file of deletedFile){
-                //     fs.unlink(file.path);
-                // }
                 res.json({message:`${data.name} have been deleted`})
             });
         });
     }).catch(err=>console.log(err));
-    //.catch(err=>res.status(500).json({error:"Something went wrong deleting project"}));
 });
 
 module.exports = router;
